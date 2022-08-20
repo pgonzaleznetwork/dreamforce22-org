@@ -1,10 +1,10 @@
 # Unique name for this workflow
-name: Deploy integration branch to integration and UAT orgs
+name: Deploy development branch to integration and UAT orgs
 
 # Definition when the workflow should run
 on:
     push:
-      branches: [ integration ]
+      branches: [ development ]
       paths:
         - 'force-app/**'
             

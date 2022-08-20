@@ -14,10 +14,10 @@ async function extractTests(){
 
     for await (const line of lines) {
 
-        line = line.toUpperCase();
+        let upperLine = line.toUpperCase();
 
         //special delimeter for apex tests
-        if(line.includes('APEX::[') && line.includes(']::APEX')){
+        if(upperLine.includes('APEX::[') && upperLine.includes(']::APEX')){
 
             let tests = line.substring(8,line.length-7);
             await fs.promises.writeFile(testsFile,tests);

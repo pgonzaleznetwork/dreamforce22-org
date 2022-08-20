@@ -90,7 +90,7 @@ jobs:
                   echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
 
             - name: Set current date as env variable
-              run: echo "NOW::$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+              run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
             - name: Echo current date
               run: echo ${{env.NOW}}
                   

@@ -88,6 +88,11 @@ jobs:
                   node ./parsePR.js              
                   TESTS=$(cat testsToRun.txt)       
                   echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
+
+            - name: Set current date as env variable
+              run: echo "NOW::$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+            - name: Echo current date
+              run: echo ${{env.NOW}}
                   
             # Now Install Salesforce CLI
             - name: 'Install Salesforce CLI'

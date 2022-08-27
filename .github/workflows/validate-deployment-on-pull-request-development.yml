@@ -105,7 +105,7 @@ jobs:
                   echo ${line: 7:$afterApexPrefix} > ./testsToRun.txt
               fi
               
-          done < ./pr_body.txt
+          done < ${{github.event.pull_request.body}}
 
           TESTS=$(cat testsToRun.txt)       
 

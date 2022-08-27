@@ -85,17 +85,19 @@ jobs:
         run: |
           echo $PR_BODY > ./pr_body.txt
 
-          echo "all" > testsToRun.txt
+          echo "all" > ./testsToRun.txt
 
-          while IFS= read -r line; do
+          while IFS= read -r line || [ -n "$line" ]; do
               upperstr=$(echo $line | tr '[:lower:]' '[:upper:]')
+              echo $upperstr
               
               if [[ "$upperstr" == *"APEX::["* ]] && [[ "$upperstr" == *"]::APEX"* ]]
               then
                   len=$(echo ${#line})
                   startOfApexSuffix=$(($len-7))
                   afterApexPrefix=$(($startOfApexSuffix-7))
-                  echo ${line: 7:$afterApexPrefix} > testsToRun.txt
+                  echo "there is a match"
+                  echo ${line: 7:$afterApexPrefix} > ./testsToRun.txt
               fi
               
           done < ./pr_body.txt

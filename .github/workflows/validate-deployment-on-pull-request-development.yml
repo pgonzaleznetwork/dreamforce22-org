@@ -83,6 +83,11 @@ jobs:
         # as this allows us to reference the list in a subsequent step.  If you
         # were using a normal env variable, its value would not be available outside this step.
         run: |
+
+          echo "NEW STRUC"
+          PR_BODY="${PR_BODY//'%'/'%25'}"
+          PR_BODY="${PR_BODY//$'\n'/'%0A'}"
+          PR_BODY="${PR_BODY//$'\r'/'%0D'}"
           echo $PR_BODY > ./pr_body.txt
 
           echo "all" > ./testsToRun.txt

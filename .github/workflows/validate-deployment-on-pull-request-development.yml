@@ -86,11 +86,13 @@ jobs:
 
           FILE=./parsePR.js 
           if test -f "$FILE"; then
+              echo "Node.js file found. Checking which tests to run"
               echo $PR_BODY > ./pr_body.txt
               node ./parsePR.js              
               TESTS=$(cat testsToRun.txt)
               echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV     
           else
+              echo "Node.js file not found. All tests will be run"
               TESTS=all
               echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV 
           fi

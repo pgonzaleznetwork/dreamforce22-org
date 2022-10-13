@@ -10,4 +10,10 @@ public class DreamforceClassTest {
     public static void should_return_bye(){
         System.assert(DreamforceClass.bye() == 'bye');
     }
+
+    @IsTest
+    public static void otherMethods(){
+        DreamforceClass.check();
+        DreamforceClass.newMethod();
+    }
 }

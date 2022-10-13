@@ -4,7 +4,7 @@ name: Deploy development branch to integration and UAT orgs
 # Definition when the workflow should run
 on:
     push:
-      branches: [ development ]
+      branches: [ olddevelopment ]
       paths:
         - 'force-app/**'
             

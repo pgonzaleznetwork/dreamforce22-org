@@ -7,4 +7,10 @@ public with sharing class DreamforceClass {
     public static String bye(){
         return 'bye';
     }
+
+    public static void check(){
+        //second change
+    }
+
+    public static void newMethod(){}
 }

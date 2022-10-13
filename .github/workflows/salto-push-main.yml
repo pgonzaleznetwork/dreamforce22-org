@@ -1,0 +1,48 @@
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - 'main'
+
+jobs:
+  merge_in_salto:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Salto repository
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SFDX_PIPELINE_DEPLOY_PRIVATE_KEY }}
+          repository: salto-io/sfdx-salto-integration
+          ref: development
+          path: ./salto
+      - name: Checkout This repository
+        uses: actions/checkout@v3
+        with:
+          path: ./sfdx
+          ref: ${{ github.base_ref }}
+      # We currently assume all merges are "squash and merge"
+      - name: Merge branch in salto repo
+        env:
+          sha: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          cd ./sfdx
+          git config --global user.name $(git log $sha -n 1 --format="%an")
+          git config --global user.email $(git log $sha -n 1 --format="%ae")
+          git log $sha -n 1 --format="%ad" > ../date.txt
+          git log $sha -n 1 --format="%s%n%n%b" > ../message.txt
+
+          cd ../salto
+          git fetch origin sfdx/${GITHUB_HEAD_REF}
+          git checkout -b tmp origin/sfdx/${GITHUB_HEAD_REF}
+          git reset development
+          git checkout development
+
+          echo "Adding commit to salto repo:" >> $GITHUB_STEP_SUMMARY
+          cat ../message.txt >> $GITHUB_STEP_SUMMARY
+          git add --all .
+          git status
+          git commit --date="$(cat ../date.txt)" -F ../message.txt
+          
+          git push

@@ -1,0 +1,137 @@
+name: Deploy and sync to Salto repository
+on: 
+  push:
+    branches:
+      - saltofeature/*
+jobs:
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     SFDX_USER_NAME: ori+dev12@salto.io
+  #     SFDX_SERVER_KEY: ${{ secrets.SFDX_SERVER_KEY }}
+  #     SFDX_CONSUMER_KEY: ${{ secrets.SFDX_CONSUMER_KEY }}
+  #   steps:
+  #     - name: Install Salesforce CLI
+  #       run: |
+  #           wget https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+  #           mkdir sfdx-cli
+  #           tar xJf sfdx-linux-amd64.tar.xz -C sfdx-cli --strip-components 1
+  #           ./sfdx-cli/install
+  #     - name: Authenticate
+  #       run: |
+  #         echo $SFDX_SERVER_KEY | base64 -d > ./server.key
+  #         sfdx auth:jwt:grant --clientid ${SFDX_CONSUMER_KEY} --jwtkeyfile ./server.key --username ${SFDX_USER_NAME} --setdefaultdevhubusername --setalias github-${GITHUB_REF_NAME}
+  #     - name: Checkout SFDX before
+  #       uses: actions/checkout@v3
+  #       with:
+  #         path: ./sfdx
+  #     - name: Deploy
+  #       run: sfdx force:source:deploy -p force-app -u ${SFDX_USER_NAME}
+  #       working-directory: ./sfdx
+
+  push-commit-diff-to-salto:
+    # needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout SFDX before
+        uses: actions/checkout@v3
+        with:
+          path: ./before
+          fetch-depth: 20 # Assuming a feature branch won't have more than this many commits
+      - name: Checkout SFDX after
+        uses: actions/checkout@v3
+        with:
+          path: ./after
+          fetch-depth: 0 # Seems like any other number of depth doesn't allow comparing to the base branch
+      - name: Checkout Salto repository
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SFDX_PIPELINE_DEPLOY_PRIVATE_KEY }}
+          repository: pgonzaleznetwork/salto-dx
+          path: ./salto-repo
+          ref: development
+
+      - name: Get salto CLI
+        env:
+         SALTO_CLI_URL: https://output.circle-artifacts.com/output/job/08fbb50b-4279-4735-921b-532f601a4fb7/artifacts/0/pkg/cli/linux/salto
+        run: |
+          wget $SALTO_CLI_URL -O ./salto && chmod +x ./salto
+
+      - name: Restore salto cache
+        uses: actions/cache@v3
+        with:
+          key: salto-${{ github.ref_name }}-${{ hashFiles('./salto-repo/salto.config/state/**') }}
+          restore-keys: |
+            salto-${{ github.ref_name }}-
+            salto-
+          path: ~/.salto
+        
+      - name: Setup branch on Salto repo
+        run: |
+            if git branch -r | grep "origin/sfdx/${GITHUB_REF_NAME}"; then
+              echo "branch sfdx/${GITHUB_REF_NAME} already exists, resetting it on top of development branch"
+              git fetch origin/sfdx/${GITHUB_REF_NAME}
+              git checkout sfdx/${GITHUB_REF_NAME}
+              git reset --hard development
+            else
+              echo "creating new branch sfdx/${GITHUB_REF_NAME}"
+              git checkout -b sfdx/${GITHUB_REF_NAME} development
+            fi
+        working-directory: ./salto-repo
+
+      - name: update workspace cache
+        run: ../salto workspace cache update -v
+        working-directory: ./salto-repo
+
+      # - name: Add commit to Salto
+      #   run: |
+      #     cd ./before
+      #     git checkout HEAD~1
+      #     cd ../salto-repo
+      #     ../salto fetch-diff ../before ../after -u dev12
+      #     if git status | grep 'nothing to commit' > /dev/null; then
+      #       echo "No changes found, skipping commit $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
+      #     else
+      #       pushd ../after
+      #       git config --global user.name $(git log $GITHUB_SHA -n 1 --format="%an")
+      #       git config --global user.email $(git log $GITHUB_SHA -n 1 --format="%ae")
+      #       git log $GITHUB_SHA -n 1 --format="%ad" > ../date.txt
+      #       git log $GITHUB_SHA -n 1 --format="%s%n%n%b" > ../message.txt
+      #       popd
+      #       git add --all .
+      #       git status
+
+      #       echo "Adding commit to salto repo:" >> $GITHUB_STEP_SUMMARY
+      #       cat ../message.txt >> $GITHUB_STEP_SUMMARY
+
+      #       git commit --date="$(cat ../date.txt)" -F ../message.txt
+      #       git push
+      #     fi
+
+      - name: sync commits
+        run: |
+          for sha in $(git --git-dir ./after/.git log --reverse --pretty=%H origin/main..${GITHUB_REF_NAME} --); do
+            cd ${GITHUB_WORKSPACE}/before
+            git checkout $sha~1
+            cd ../after
+            git checkout $sha
+            cd ../salto-repo
+            ../salto fetch-diff ../before ../after
+            if git status | grep 'nothing to commit' > /dev/null; then
+              echo "No changes to NaCl, skipping commit $sha" >> $GITHUB_STEP_SUMMARY
+            else
+              pushd ../after
+              git config --global user.name $(git log $sha -n 1 --format="%an")
+              git config --global user.email $(git log $sha -n 1 --format="%ae")
+              git log $sha -n 1 --format="%ad" > ../date.txt
+              git log $sha -n 1 --format="%s%n%n%b" > ../message.txt
+              popd
+              echo "Adding commit to salto repo:" >> $GITHUB_STEP_SUMMARY
+              cat ../message.txt >> $GITHUB_STEP_SUMMARY
+              git add --all .
+              git status
+              git commit --date="$(cat ../date.txt)" -F ../message.txt
+            fi
+          done
+          cd ${GITHUB_WORKSPACE}/salto-repo
+          git push -fu origin sfdx/$GITHUB_REF_NAME

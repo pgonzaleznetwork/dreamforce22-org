@@ -3,7 +3,7 @@ on:
     types:
       - closed
     branches:
-      - 'main'
+      - 'development'
 
 jobs:
   merge_in_salto:

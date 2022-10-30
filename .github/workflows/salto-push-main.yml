@@ -13,8 +13,8 @@ jobs:
       - name: Checkout Salto repository
         uses: actions/checkout@v3
         with:
-          ssh-key: ${{ secrets.SFDX_PIPELINE_DEPLOY_PRIVATE_KEY }}
-          repository: salto-io/sfdx-salto-integration
+          ssh-key: ${{ secrets.SALTO_REPO_DEPLOY_KEY }}
+          repository: pgonzaleznetwork/salto-dx
           ref: development
           path: ./salto
       - name: Checkout This repository

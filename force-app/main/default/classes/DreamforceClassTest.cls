@@ -14,6 +14,6 @@ public class DreamforceClassTest {
     @IsTest
     public static void otherMethods(){
         DreamforceClass.check();
-        DreamforceClass.newMethod();
+       System.assert(DreamforceClass.newMethod());
     }
 }

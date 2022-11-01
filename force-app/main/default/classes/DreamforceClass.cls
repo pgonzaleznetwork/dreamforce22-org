@@ -12,7 +12,7 @@ public with sharing class DreamforceClass {
         //second change
     }
 
-    public static void newMethod(){
-        //added from dx repo!
+    public static Boolean newMethod(){
+        return true;
     }
 }

@@ -15,4 +15,8 @@ public with sharing class DreamforceClass {
     public static void newMethod(){
         //added from dx repo!
     }
+
+    public static Boolean testMe(){
+        return true;
+    }
 }

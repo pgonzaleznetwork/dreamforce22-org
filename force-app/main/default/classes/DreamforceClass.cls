@@ -16,7 +16,7 @@ public with sharing class DreamforceClass {
         //added from dx repo!
     }
 
-    public static void customerEngineers(){
-        //say hello!!!
+    public static Boolean customerEngineers(){
+        return true;
     }
 }

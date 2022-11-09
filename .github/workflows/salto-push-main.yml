@@ -3,7 +3,7 @@ on:
     types:
       - closed
     branches:
-      - 'development'
+      - 'saltodevelopment'
 
 jobs:
   merge_in_salto:

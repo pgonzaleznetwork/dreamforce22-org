@@ -4,7 +4,7 @@ name: Deploy main branch to production org
 # Definition when the workflow should run
 on:
     push:
-      branches: [ oldmain ]
+      branches: [ main ]
       paths:
         - 'force-app/**'
             

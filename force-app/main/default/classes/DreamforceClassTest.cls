@@ -16,4 +16,12 @@ public class DreamforceClassTest {
         DreamforceClass.check();
         DreamforceClass.newMethod();
     }
+
+    @IsTest
+    static void testTheNewThing() {
+        
+        Test.startTest();
+        System.assert((DreamforceClass.customerEngineers()));
+        Test.stopTest();
+    }
 }

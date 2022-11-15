@@ -1,5 +1,7 @@
 public with sharing class ProjectDomain {
-    public ProjectDomain() {
-
+    
+    public static void exec(){
+        
     }
+
 }

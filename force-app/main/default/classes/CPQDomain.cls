@@ -4,4 +4,8 @@ public with sharing class CPQDomain {
         //impl
     }
 
+    public static void createContact(){
+        //impl
+    }
+
 }

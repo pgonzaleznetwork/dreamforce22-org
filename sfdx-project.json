@@ -8,5 +8,12 @@
   "name": "dreamforce22-org",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "55.0"
+  "sourceApiVersion": "56.0",
+  "replacements": [
+    {
+      "filename": "force-app/main/default/classes/myClass.cls",
+      "stringToReplace": "replaceMe",
+      "replaceWithEnv": "THE_REPLACEMENT"  
+    }
+  ]
 }

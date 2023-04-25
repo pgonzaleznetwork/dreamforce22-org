@@ -2,6 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>CustomerPriority__c</fullName>
     <externalId>false</externalId>
+    <inlineHelpText>This Field is used to trigger automatic notificationss to sla-emails@company.com</inlineHelpText>
     <label>Customer Priority</label>
     <required>false</required>
     <trackFeedHistory>false</trackFeedHistory>
@@ -10,19 +11,19 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>High</fullName>
-                <default>false</default>
-                <label>High</label>
-            </value>
-            <value>
-                <fullName>Low</fullName>
-                <default>false</default>
-                <label>Low</label>
+                <fullName>Lowest</fullName>
+                <default>true</default>
+                <label>Lowest</label>
             </value>
             <value>
                 <fullName>Medium</fullName>
                 <default>false</default>
                 <label>Medium</label>
+            </value>
+            <value>
+                <fullName>New High</fullName>
+                <default>false</default>
+                <label>New High</label>
             </value>
         </valueSetDefinition>
     </valueSet>

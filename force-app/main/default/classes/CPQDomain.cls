@@ -1,7 +1,8 @@
 public with sharing class CPQDomain {
    
     public static void validateBundle(){
-        //impl
+        //more implementation here
+        
     }
 
 }

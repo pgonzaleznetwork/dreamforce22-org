@@ -1,7 +1,7 @@
 public with sharing class CPQDomain {
    
     public static void validateBundle(){
-        //impl
+        System.debug(true);
     }
 
     public static void validateProduct(){
